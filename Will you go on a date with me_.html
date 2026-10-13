@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Will you go on a date with me?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#E4EDE0;--ink:#1F3B34;--soft:#52695F;--sun:#F2B544;--rose:#C9506B;--paper:#FFF8EC;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14261F;--ink:#F3EBDD;--soft:#A9BDB1;--sun:#F2B544;--rose:#F08AA0;--paper:#1F3A31}}
+:root[data-theme="dark"]{--bg:#14261F;--ink:#F3EBDD;--soft:#A9BDB1;--sun:#F2B544;--rose:#F08AA0;--paper:#1F3A31}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Figtree,system-ui,sans-serif;font-size:1.05rem;line-height:1.6;min-height:100vh}
+main{max-width:40rem;margin:0 auto;padding:3.5rem 1.4rem 3rem}
+h1{font-family:"Young Serif",Georgia,serif;font-weight:400;font-size:clamp(2.4rem,9vw,4rem);line-height:1.08;margin:0 0 1rem}
+.lead{color:var(--soft);font-size:1.2rem;margin:0 0 2.5rem;max-width:30rem}
+.ticket{background:var(--paper);border-radius:.6rem;display:grid;grid-template-columns:1fr auto;position:relative;box-shadow:0 2px 0 var(--sun);margin-bottom:2.5rem}
+.ticket .main{padding:1.6rem 1.4rem}
+.ticket .stub{border-left:2px dashed var(--soft);padding:1.6rem 1.1rem;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;min-width:6.5rem}
+.stub b{font-family:"Young Serif",Georgia,serif;font-weight:400;font-size:3rem;line-height:1;color:var(--rose)}
+.stub span{color:var(--soft);font-size:.9rem}
+dl{margin:0;display:grid;gap:1rem}
+dt{color:var(--soft);font-size:.9rem}
+dd{margin:0;font-weight:600;font-size:1.15rem}
+.ticket::before,.ticket::after{content:"";position:absolute;right:calc(6.5rem - .6rem);width:1.2rem;height:1.2rem;border-radius:50%;background:var(--bg)}
+.ticket::before{top:-.6rem}.ticket::after{bottom:-.6rem}
+h2{font-family:"Young Serif",Georgia,serif;font-weight:400;font-size:1.6rem;margin:0 0 .8rem}
+ul{padding-left:1.2rem;margin:0 0 2.5rem}li{margin-bottom:.5rem}
+.ask{text-align:center;padding-top:.5rem}
+.ask p{font-family:"Young Serif",Georgia,serif;font-size:1.6rem;margin:0 0 1.2rem}
+.btns{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
+button{font:inherit;font-weight:600;border-radius:2rem;padding:.85rem 1.7rem;cursor:pointer;border:2px solid var(--rose);transition:transform .2s}
+button:hover{transform:translateY(-2px)}
+button:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+#yes{background:var(--rose);color:#fff}
+#maybe{background:transparent;color:var(--rose)}
+#maybe.run{position:fixed;z-index:5;margin:0;transition:left .25s ease,top .25s ease}
+#hint{min-height:1.6rem;color:var(--soft);margin:1rem 0 0}
+#done{display:none;text-align:center;padding:2rem 1.4rem;background:var(--paper);border-radius:.6rem;border:2px solid var(--sun)}
+#done p{margin:0 0 .6rem}
+#done .big{font-family:"Young Serif",Georgia,serif;font-size:2rem;color:var(--rose)}
+.said .ask{display:none}.said #done{display:block}
+@media (max-width:30rem){.ticket{grid-template-columns:1fr}.ticket .stub{border-left:0;border-top:2px dashed var(--soft);flex-direction:row;gap:.8rem}.ticket::before,.ticket::after{display:none}}
+@media (prefers-reduced-motion:reduce){button,#maybe.run{transition:none}}
+</style>
+</head>
+<body>
+<main id="app">
+<h1>Will you go on a date with me?</h1>
+<p class="lead">Just the three of us. No rush, no schedule, only time together.</p>
+
+<div class="ticket" role="group" aria-label="Date details">
+<div class="main"><dl>
+<div><dt>Where</dt><dd id="where"></dd></div>
+<div><dt>When</dt><dd id="when"></dd></div>
+<div><dt>Who's invited</dt><dd>You, me, and our little one</dd></div>
+</dl></div>
+<div class="stub"><b>21</b><span>hours together</span></div>
+</div>
+
+<h2>What I have planned</h2>
+<ul>
+<li>A slow morning with nowhere to be.</li>
+<li>A dinner where we actually finish our conversation.</li>
+<li>Time for the baby to nap and for us to rest too.</li>
+<li>Photos of the three of us that we'll keep.</li>
+</ul>
+
+<section class="ask">
+<p>So, will you come?</p>
+<div class="btns">
+<button id="yes">Yes, I'd love to</button>
+<span id="slot"><button id="maybe">Let me think</button></span>
+</div>
+<p id="hint" aria-live="polite"></p>
+</section>
+<div id="done"><p class="big">She said yes!</p><p id="doneMsg"></p></div>
+</main>
+<script>
+// Edit these details.
+var CONFIG={
+  place:"Momarco Hotel, Tanay, Rizal",
+  when:"Friday, October 23 to Saturday, October 24, 2026",
+  from:"Your name",
+  maybeReplies:["Are you sure?","Our baby already said yes.","I'll bring snacks.","Okay, last chance... please?"]
+};
+var $=function(i){return document.getElementById(i)},n=0;
+$("where").textContent=CONFIG.place;
+$("when").textContent=CONFIG.when;
+function said(){
+  $("app").classList.add("said");
+  $("doneMsg").textContent="I can't wait. Pack comfy clothes and the baby's favorite things. I'll take care of the rest. Love, "+CONFIG.from;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+try{if(localStorage.getItem("saidYes")==="1")said()}catch(e){}
+$("yes").addEventListener("click",function(){
+  try{localStorage.setItem("saidYes","1")}catch(e){}
+  said();
+});
+var mb=$("maybe"),slot=$("slot");
+function dodge(e){
+  if(e&&e.cancelable)e.preventDefault();
+  var r=mb.getBoundingClientRect();
+  if(!mb.classList.contains("run")){slot.style.width=r.width+"px";slot.style.height=r.height+"px";mb.classList.add("run");mb.style.left=r.left+"px";mb.style.top=r.top+"px"}
+  var w=mb.offsetWidth,h=mb.offsetHeight,m=12,yr=$("yes").getBoundingClientRect(),cur=mb.getBoundingClientRect(),x,y,t=0;
+  do{
+    x=m+Math.random()*(window.innerWidth-w-2*m);
+    y=m+Math.random()*(window.innerHeight-h-2*m);
+    t++;
+  }while(t<30&&(Math.hypot(x-cur.left,y-cur.top)<150||(x<yr.right+10&&x+w>yr.left-10&&y<yr.bottom+10&&y+h>yr.top-10)));
+  mb.style.left=x+"px";mb.style.top=y+"px";
+  $("hint").textContent=CONFIG.maybeReplies[n%CONFIG.maybeReplies.length];n++;
+}
+["pointerenter","pointerdown","touchstart","click","focus"].forEach(function(ev){mb.addEventListener(ev,dodge)});
+</script>
+</body>
+</html>
